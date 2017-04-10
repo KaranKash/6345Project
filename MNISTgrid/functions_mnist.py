@@ -5,6 +5,7 @@ import os
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import ImageGrid
 import numpy as np
+import random
 import random2
 
 # ################## Download and prepare the MNIST dataset ##################
@@ -64,39 +65,53 @@ def load_dataset():
     return X_train, y_train, X_val, y_val, X_test, y_test
 
 
-print("Loading data...")
+# print("Loading data...")
 X_train, y_train, X_val, y_val, X_test, y_test = load_dataset()
 
-## Checking if command line inputs are valid or not
-if len(sys.argv) < 2:
-    print("Please enter proper input")
-else:
-    ## Taking inputs from command line
-    N = sys.argv[1]
-    chars = sys.argv[2]
+def generateRandomOutput(N):
+    print("Generating random input of size " + str(N))
+    theString = ''
+    for i in range(N):
+        theString += str(int(10 * random.random()))
+    return generateOutputGivenInput(theString)
 
-    if len(chars) <= int(N) * int(N):
-        output = np.zeros((int(N) * int(N), 28, 28), dtype= np.float)
+def generateOutputGivenInput(chars):
+    print("Creating sequence")
+    N = len(chars)
+    output = np.zeros((N, 28, 28), dtype = np.float)
 
-        for i in range(len(chars)):
-            loc = np.where(y_train == int(chars[i]))
-            L = len(loc[0])
-            index = random2.randint(0, L - 1)
-            temp = X_train[ loc[0][index], :, :, : ]
-            output[i, :, :] = temp
+    for i in range(N):
+        loc = np.where(y_train == int(chars[i]))
+        L = len(loc[0])
+        index = random2.randint(0, L - 1)
+        temp = X_train[ loc[0][index], :, :, : ]
+        output[i, :, :] = temp
 
-        fig = plt.figure(1, (6., 6.))
-        grid = ImageGrid(fig, 110, nrows_ncols=(int(N), int(N)), axes_pad=0.0)
+    return output
 
-        gridIndexes = []
-        for i in range (int(N) * int(N)):
-            gridIndexes.append(i)
+def draw(output, random = False):
+    N = len(output)
 
+    fig = plt.figure(1, (6., 6.))
+    grid = ImageGrid(fig, 110, nrows_ncols = (1, N), axes_pad = 0.0)
+
+    gridIndexes = [i for i in range(N)]
+
+    if random:
+        print("Randomizing sequence")
         random2.shuffle(gridIndexes)
+    for i in gridIndexes:
+        grid[i].imshow( output[gridIndexes[i]], cmap = "gray" )
 
-        for i in gridIndexes:
-            grid[i].imshow( output[gridIndexes[i]], cmap='gray' )
+    print("Drawing output")
+    plt.show()
 
-        plt.show()
+
+if __name__ == '__main__':
+    if len(sys.argv) == 2:
+        draw(generateOutputGivenInput(sys.argv[1]))
+    elif len(sys.argv) == 3:
+        draw(generateOutputGivenInput(sys.argv[1]), sys.argv[2])
     else:
-        print("Please ensure proper input dimensions")
+        draw(generateRandomOutput(4))
+
