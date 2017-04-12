@@ -109,7 +109,11 @@ def draw(output, random = False):
 
 if __name__ == '__main__':
     if len(sys.argv) == 2:
-        draw(generateOutputGivenInput(sys.argv[1]))
+        argument = sys.argv[1]
+        if len(sys.argv[1]) == 1:
+            draw(generateRandomOutput(int(argument)))
+        else:
+            draw(generateOutputGivenInput(sys.argv[1]))
     elif len(sys.argv) == 3:
         draw(generateOutputGivenInput(sys.argv[1]), sys.argv[2])
     else:
