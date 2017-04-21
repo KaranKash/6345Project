@@ -2,8 +2,8 @@ from __future__ import print_function
 
 import sys
 import os
-import matplotlib.pyplot as plt
-from mpl_toolkits.axes_grid1 import ImageGrid
+# import matplotlib.pyplot as plt
+# from mpl_toolkits.axes_grid1 import ImageGrid
 import numpy as np
 import random2
 
