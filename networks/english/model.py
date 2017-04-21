@@ -35,7 +35,7 @@ def forward_propagation(images, mnist, nummatches, train=False, dropout=False):
         softmax_layer(5, name="class-softmax-layer")
     ])
     specs = tf.concat([images]*10,0)
-    # print("specs",specs.get_shape())
+    print("specs",specs.get_shape())
     t1 = image_network(mnist)[0]
     t2 = audio_network(specs)[0]
     embeddings = tf.concat([t1,t2],0)
