@@ -33,8 +33,7 @@ def train_network(use_gpu=True, restore_if_possible=True, batch_size=30):
         summaries = tf.summary.merge_all()
 
         # Train:
-        with tf.Session(config=tf.ConfigProto(
-                log_device_placement=False)) as sess:
+        with tf.Session(config=tf.ConfigProto(log_device_placement=False)) as sess:
             summary_writer = tf.summary.FileWriter('tflog', sess.graph)  # For logging for TensorBoard
 
             saver = tf.train.Saver()
