@@ -17,7 +17,7 @@ dim_Y = 11
 window_size = 400
 
 label_map = {'1':1,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'o':0,'z':0}
-perms = [p for p in permutations('0123456789')]
+perms = [''.join(p) for p in permutations('0123456789')]
 
 def load_from_file(f):
     '''Given a file, returns a list of the string values in that value'''
@@ -100,7 +100,6 @@ def generate_mnist_set(labels,train=True):
             i = np.random.randint(0,len(perms))
             j = np.random.randint(1,5)
             grid = perms[i][0:j]
-            print(label,grid)
             count = countOverlap(label,grid)
             out.append(makeGrid(grid,train=train))
             matches.append(count)
