@@ -22,7 +22,7 @@ def read_from_csv(filename_queue):
     _, csv_row = reader.read(filename_queue)
     record_defaults = [["0"]] + [[0.0]]*9200
     outlist = tf.decode_csv(csv_row, record_defaults=record_defaults)
-    image = tf.pack(outlist[1:])
+    image = tf.stack(outlist[1:])
     label = outlist[0]
     return image, label
 
