@@ -17,7 +17,7 @@ def optimizer(num_batches_per_epoch):
         opt = tf.train.AdamOptimizer(0.00001)
         return increment_step, opt, global_step
 
-def train_network(use_gpu=True, restore_if_possible=True, batch_size=256):
+def train_network(use_gpu=True, restore_if_possible=True, batch_size=30):
     with tf.device("/cpu:0"):
         # Build graph:
         image_batch, label_batch, num_examples_per_epoch = input_graph(training=True, batch_size=batch_size)
@@ -56,7 +56,7 @@ def train_network(use_gpu=True, restore_if_possible=True, batch_size=256):
                 while not coord.should_stop():
                     labels = sess.run([label_batch])
                     # print("labels",labels[0],labels)
-                    labels = labels[0]
+                    labels = labels[0]*10
                     mnist_batch, nummatches_batch = generate_mnist_set(labels)
                     _, num_correct, batch_loss, i = sess.run([train, correct, loss, step], feed_dict={
                         mnist: mnist_batch, nummatches: nummatches_batch
@@ -66,7 +66,7 @@ def train_network(use_gpu=True, restore_if_possible=True, batch_size=256):
                         in_batch = num_batches_per_epoch
                     epoch_count = ((i-1) // (num_batches_per_epoch)) + 1
 
-                    print("Epoch %d. Batch %d/%d. Acc %.3f. Loss %.2f" % (epoch_count, in_batch, num_batches_per_epoch, 100*num_correct / float(batch_size), batch_loss))
+                    print("Epoch %d. Batch %d/%d. Acc %.3f. Loss %.2f" % (epoch_count, in_batch, num_batches_per_epoch, 100*num_correct / float(batch_size*10), batch_loss))
 
                     if in_batch == num_batches_per_epoch:
                         # Checkpoint, save the model:
