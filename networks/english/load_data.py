@@ -97,6 +97,7 @@ def generate_mnist_set(labels,train=True):
     matches = []
     for i in range(10):
         for label in labels:
+            label = str(label)
             i = np.random.randint(0,len(perms))
             j = np.random.randint(1,5)
             grid = perms[i][0:j]

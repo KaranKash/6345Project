@@ -17,7 +17,7 @@ def optimizer(num_batches_per_epoch):
         opt = tf.train.AdamOptimizer(0.00001)
         return increment_step, opt, global_step
 
-def train_network(use_gpu=True, restore_if_possible=True, batch_size=30):
+def train_network(use_gpu=True, restore_if_possible=True, batch_size=10):
     with tf.device("/cpu:0"):
         # Build graph:
         image_batch, label_batch, num_examples_per_epoch = input_graph(training=True, batch_size=batch_size)
@@ -57,6 +57,7 @@ def train_network(use_gpu=True, restore_if_possible=True, batch_size=30):
                     labels = sess.run([label_batch])
                     # print("labels",labels[0],labels)
                     labels = labels[0]
+                    print("labels",labels)
                     mnist_batch, nummatches_batch = generate_mnist_set(labels)
                     print(sum(x > 0 for x in nummatches_batch))
                     _, num_correct, batch_loss, i = sess.run([train, correct, loss, step], feed_dict={

@@ -35,11 +35,11 @@ def forward_propagation(images, mnist, nummatches, train=False, dropout=False):
         softmax_layer(5, name="class-softmax-layer")
     ])
     specs = tf.concat(concat_dim=0,values=[images]*10)
-    print("specs",specs.get_shape())
+    # print("specs",specs.get_shape())
     t1 = image_network(mnist)[0]
     t2 = audio_network(specs)[0]
     embeddings = tf.concat(concat_dim=1, values=[t1,t2])
-    print("embeddings",embeddings.get_shape())
+    # print("embeddings",embeddings.get_shape())
     _, logits, proba, prediction = classification_network(embeddings)
 
     with tf.name_scope('accuracy'):
