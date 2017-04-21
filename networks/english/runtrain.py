@@ -56,7 +56,7 @@ def train_network(use_gpu=True, restore_if_possible=True, batch_size=30):
                 while not coord.should_stop():
                     labels = sess.run([label_batch])
                     # print("labels",labels[0],labels)
-                    labels = labels[0]*10
+                    labels = labels[0]
                     mnist_batch, nummatches_batch = generate_mnist_set(labels)
                     _, num_correct, batch_loss, i = sess.run([train, correct, loss, step], feed_dict={
                         mnist: mnist_batch, nummatches: nummatches_batch

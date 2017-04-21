@@ -95,13 +95,14 @@ def ld(rootdir,target):
 def generate_mnist_set(labels,train=True):
     out = []
     matches = []
-    for label in labels:
-        i = np.random.randint(0,len(perms))
-        j = np.random.randint(1,5)
-        grid = perms[i][0:j]
-        count = countOverlap(label,grid)
-        out.append(makeGrid(grid,train=train))
-        matches.append(count)
+    for i in range(10):
+        for label in labels:
+            i = np.random.randint(0,len(perms))
+            j = np.random.randint(1,5)
+            grid = perms[i][0:j]
+            count = countOverlap(label,grid)
+            out.append(makeGrid(grid,train=train))
+            matches.append(count)
     out = np.array(out)
     matches = np.array(matches)
     out = np.expand_dims(out, axis=3)
