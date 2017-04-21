@@ -78,7 +78,7 @@ def makeGrid(chars, train=True, N=2):
         for i in range(len(chars)):
             loc = np.where(y == int(chars[i]))
             L = len(loc[0])
-            index = random2.randint(0, L - 1)
+            index = random.randint(0, L - 1)
             temp = X[ loc[0][index], :, :, : ]
             output[i, :, :] = temp
 
