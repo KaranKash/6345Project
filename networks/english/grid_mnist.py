@@ -5,7 +5,7 @@ import os
 # import matplotlib.pyplot as plt
 # from mpl_toolkits.axes_grid1 import ImageGrid
 import numpy as np
-import random2
+import random
 
 # ################## Download and prepare the MNIST dataset ##################
 # This is just some way of getting the MNIST dataset from an online location
@@ -89,7 +89,7 @@ def makeGrid(chars, train=True, N=2):
         for i in range (int(N) * int(N)):
             gridIndexes.append(i)
 
-        random2.shuffle(gridIndexes)
+        random.shuffle(gridIndexes)
 
         # for i in gridIndexes:
         #     grid[i].imshow( output[gridIndexes[i]], cmap='gray' )
