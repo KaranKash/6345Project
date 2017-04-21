@@ -34,8 +34,7 @@ def forward_propagation(images, mnist, nummatches, train=False, dropout=False):
         fully_connected_layer(512, keep_prob=1.0, name="class-local2-layer"),
         softmax_layer(5, name="class-softmax-layer")
     ])
-    print(images.get_shape().as_list)
-    specs = tf.pack([images]*10)
+    specs = tf.pack([images]*10,axis=1)
     t1 = image_network(mnist)[0]
     t2 = audio_network(specs)[0]
     embeddings = tf.concat(concat_dim=1,values=[t1, t2])
