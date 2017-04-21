@@ -21,8 +21,8 @@ def train_network(use_gpu=True, restore_if_possible=True, batch_size=30):
     with tf.device("/cpu:0"):
         # Build graph:
         image_batch, label_batch, num_examples_per_epoch = input_graph(training=True, batch_size=batch_size)
-        mnist = tf.placeholder(tf.float32, shape=(batch_size, IMAGE_SIZE*2, IMAGE_SIZE*2, NUM_CHANNELS))
-        nummatches = tf.placeholder(tf.int32, shape=(batch_size,))
+        mnist = tf.placeholder(tf.float32, shape=(batch_size*10, IMAGE_SIZE*2, IMAGE_SIZE*2, NUM_CHANNELS))
+        nummatches = tf.placeholder(tf.int32, shape=(batch_size*10,))
         num_batches_per_epoch = num_examples_per_epoch // batch_size
         increment_step, opt, step = optimizer(num_batches_per_epoch)
         with tf.device("/gpu:0" if use_gpu else "/cpu:0"):
