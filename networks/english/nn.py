@@ -2,27 +2,27 @@ import tensorflow as tf
 from utils import *
 from functools import reduce
 
-def conv_layer(height, width, channels, name='conv1-layer', reuse=False):
+def conv_layer(height, width, channels, name='conv1-layer', reuse=False, padding='SAME'):
     def make_layer(input_to_layer):
         with tf.variable_scope(name, values=[input_to_layer], reuse=reuse):
             # weights = weight_variable([height, width, input_to_layer.get_shape()[3], channels])
             weights = tf.get_variable("weights", [height, width, input_to_layer.get_shape()[3], channels], initializer=tf.truncated_normal_initializer(stddev=0.1, dtype=tf.float32))
             # bias = bias_variable(channels,const=0.0)
             bias = tf.get_variable("bias", [channels], initializer=tf.constant_initializer(0.0, dtype=tf.float32))
-        conv = tf.nn.conv2d(input_to_layer, weights, [1, 1, 1, 1], padding='SAME')
+        conv = tf.nn.conv2d(input_to_layer, weights, [1, 1, 1, 1], padding=padding)
         preactivation = tf.nn.bias_add(conv, bias)
         out = tf.nn.relu(preactivation)
         return out
     return make_layer
 
-def pool_layer(height, width, vstride, hstride, name='pool1-layer'):
+def pool_layer(height, width, vstride, hstride, name='pool1-layer', padding='SAME'):
     def make_layer(input_to_layer):
-        return tf.nn.max_pool(input_to_layer, ksize=[1, height, width, 1], strides=[1, vstride, hstride, 1], padding='SAME', name=name)
+        return tf.nn.max_pool(input_to_layer, ksize=[1, height, width, 1], strides=[1, vstride, hstride, 1], padding=padding, name=name)
     return make_layer
 
-def mean_pool_layer(name='pool1-layer'):
+def mean_pool_layer(name='pool1-layer', padding='SAME'):
     def make_layer(input_to_layer):
-        return tf.nn.avg_pool(input_to_layer, ksize=[1, input_to_layer.get_shape()[1], 1, 1], strides=[1, 1, 1, 1], padding='SAME', name=name)
+        return tf.nn.avg_pool(input_to_layer, ksize=[1, input_to_layer.get_shape()[1], 1, 1], strides=[1, 1, 1, 1], padding=padding, name=name)
     return make_layer
 
 def norm_layer(name='norm1-layer'):

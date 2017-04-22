@@ -10,12 +10,12 @@ SAVED_MODEL_PATH = os.path.join(SAVED_MODEL_DIR, "model.ckpt")
 
 def forward_propagation(images, mnist, nummatches, train=False, dropout=False):
     audio_network = stack_layers([
-        conv_layer(5, 23, 64, name='audio-conv1-layer'),
-        pool_layer(4,1,2,1,name="audio-max-pool1-layer"),
-        conv_layer(10, 1, 256, name='audio-conv2-layer'),
-        pool_layer(4,1,2,1,name="audio-max-pool2-layer"),
-        conv_layer(15, 1, 512, name='audio-conv3-layer'),
-        mean_pool_layer(name="audio-max-pool1-layer")
+        conv_layer(5, 23, 64, name='audio-conv1-layer',padding='VALID'),
+        pool_layer(4,1,2,1,name="audio-max-pool1-layer",padding='VALID'),
+        conv_layer(10, 1, 256, name='audio-conv2-layer',padding='VALID'),
+        pool_layer(4,1,2,1,name="audio-max-pool2-layer",padding='VALID'),
+        conv_layer(15, 1, 512, name='audio-conv3-layer',padding='VALID'),
+        mean_pool_layer(name="audio-max-pool1-layer",padding='VALID')
     ])
 
     image_network = stack_layers([
