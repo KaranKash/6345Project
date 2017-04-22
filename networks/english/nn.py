@@ -20,6 +20,11 @@ def pool_layer(height, width, vstride, hstride, name='pool1-layer'):
         return tf.nn.max_pool(input_to_layer, ksize=[1, height, width, 1], strides=[1, vstride, hstride, 1], padding='SAME', name=name)
     return make_layer
 
+def mean_pool_layer(name='pool1-layer'):
+    def make_layer(input_to_layer):
+        return tf.nn.avg_pool(input_to_layer, ksize=[1, input_to_layer.get_shape()[1], 1, 1], strides=[1, 1, 1, 1], padding='SAME', name=name)
+    return make_layer
+
 def norm_layer(name='norm1-layer'):
     def make_layer(input_to_layer):
         return tf.nn.local_response_normalization(input_to_layer, depth_radius=5, bias=1.0, alpha=0.001 / 9.0, beta=0.75, name=name)
