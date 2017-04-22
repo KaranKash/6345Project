@@ -65,8 +65,8 @@ def train_network(use_gpu=True, restore_if_possible=True, batch_size=128):
                     if in_batch == 0:
                         in_batch = num_batches_per_epoch
                     epoch_count = ((i-1) // (num_batches_per_epoch)) + 1
-
-                    print("Epoch %d. Batch %d/%d. Acc %.3f. Loss %.2f" % (epoch_count, in_batch, num_batches_per_epoch, 100*num_correct / float(batch_size*10), batch_loss))
+                    nz = sum(x > 0 for x in nummatches_batch)
+                    print("Epoch %d. Batch %d/%d. Acc %.3f. Loss %.2f. Nonzero %.2f." % (epoch_count, in_batch, num_batches_per_epoch, 100*num_correct / float(batch_size*10), batch_loss, nz/float(batch_size*10)))
 
                     if in_batch == num_batches_per_epoch:
                         # Checkpoint, save the model:
