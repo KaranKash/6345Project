@@ -15,8 +15,7 @@ def forward_propagation(images, mnist, nummatches, train=False, dropout=False):
         conv_layer(10, 1, 256, name='audio-conv2-layer'),
         pool_layer(4,1,2,1,name="audio-max-pool2-layer"),
         conv_layer(15, 1, 512, name='audio-conv3-layer'),
-        mean_pool_layer(name="audio-max-pool1-layer"),
-        softmax_layer(11, name="audio-softmax-layer")
+        mean_pool_layer(name="audio-max-pool1-layer")
     ])
 
     image_network = stack_layers([
@@ -38,7 +37,7 @@ def forward_propagation(images, mnist, nummatches, train=False, dropout=False):
     specs = tf.concat([images]*10,0)
     # print("specs",specs.get_shape())
     t1 = image_network(mnist)[0]
-    t2 = audio_network(specs)[0]
+    t2 = audio_network(specs)
     embeddings = tf.concat([t1,t2],1)
     # print("embeddings",embeddings.get_shape())
     _, logits, proba, prediction = classification_network(embeddings)
