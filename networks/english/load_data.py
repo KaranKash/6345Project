@@ -17,7 +17,7 @@ dim_Y = 11
 window_size = 400
 
 label_map = {'1':1,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'o':0,'z':0}
-perms = [''.join(p) for p in permutations('0123456789')]
+# perms = [''.join(p) for p in permutations('0123456789')]
 
 def load_from_file(f):
     '''Given a file, returns a list of the string values in that value'''
@@ -91,6 +91,25 @@ def ld(rootdir,target):
                     row = load_from_file(f)
                     f.close()
                     writer.writerow([chars] + row)
+#
+# def generate_mnist_set(labels,train=True):
+#     out = []
+#     matches = []
+#     for i in range(10):
+#         for label in labels:
+#             label = str(label)
+#             i = np.random.randint(0,len(perms))
+#             j = np.random.randint(1,5)
+#             grid = perms[i][0:j]
+#             # print(label,grid)
+#             count = countOverlap(label,grid)
+#             out.append(makeGrid(grid,train=train))
+#             matches.append(count)
+#     out = np.array(out)
+#     matches = np.array(matches)
+#     out = np.expand_dims(out, axis=3)
+#     return out, matches
+
 
 def generate_mnist_set(labels,train=True):
     out = []
@@ -98,17 +117,27 @@ def generate_mnist_set(labels,train=True):
     for i in range(10):
         for label in labels:
             label = str(label)
-            i = np.random.randint(0,len(perms))
-            j = np.random.randint(1,5)
-            grid = perms[i][0:j]
-            # print(label,grid)
-            count = countOverlap(label,grid)
-            out.append(makeGrid(grid,train=train))
-            matches.append(count)
+            overlap = np.random.randint(0,len(label)+1)
+            grid = generate_mnist_grid(label,overlap)
+            out.append(grid)
+            matches.append(overlap)
     out = np.array(out)
     matches = np.array(matches)
     out = np.expand_dims(out, axis=3)
     return out, matches
+
+def generate_mnist_grid(label,overlap):
+    vals = ""
+    orig = [label_map[c] for c in label]
+    for i in range(overlap):
+        c = np.random.randint(0,len(label))
+        vals += label[c]
+        label = label[:c] + label[c+1:]
+    while len(vals) < 4:
+        c = np.random.randint(0,len(label))
+        if c not in orig:
+            vals += str(c)
+    return makeGrid(vals,train=train)
 
 def countOverlap(string1,string2):
     count = 0

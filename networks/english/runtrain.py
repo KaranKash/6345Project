@@ -65,8 +65,12 @@ def train_network(use_gpu=True, restore_if_possible=True, batch_size=128):
                     if in_batch == 0:
                         in_batch = num_batches_per_epoch
                     epoch_count = ((i-1) // (num_batches_per_epoch)) + 1
-                    nz = sum(x > 0 for x in nummatches_batch)
-                    print("Epoch %d. Batch %d/%d. Acc %.3f. Loss %.2f. Nonzero %.2f." % (epoch_count, in_batch, num_batches_per_epoch, 100*num_correct / float(batch_size*10), batch_loss, nz/float(batch_size*10)))
+                    n0 = sum(x == 0 for x in nummatches_batch)
+                    n1 = sum(x == 1 for x in nummatches_batch)
+                    n2 = sum(x == 2 for x in nummatches_batch)
+                    n3 = sum(x == 3 for x in nummatches_batch)
+                    n4 = sum(x == 4 for x in nummatches_batch)
+                    print("Epoch %d. Batch %d/%d. Acc %.3f. Loss %.2f. Zeros %.2f. Ones %.2f. Twos %.2f. Threes %.2f. Fours %.2f." % (epoch_count, in_batch, num_batches_per_epoch, 100*num_correct / float(batch_size*10), batch_loss, n0/float(batch_size*10), n1/float(batch_size*10), n2/float(batch_size*10), n3/float(batch_size*10), n4/float(batch_size*10)))
 
                     if in_batch == num_batches_per_epoch:
                         # Checkpoint, save the model:
