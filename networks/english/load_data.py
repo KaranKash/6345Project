@@ -118,6 +118,7 @@ def generate_mnist_set(labels,train=True):
         for label in labels:
             label = str(label)
             overlap = np.random.randint(0,len(label)+1)
+            print(len(label),overlap)
             grid = generate_mnist_grid(label,overlap)
             out.append(grid)
             matches.append(overlap)
