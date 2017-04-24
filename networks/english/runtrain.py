@@ -91,4 +91,4 @@ def train_network(use_gpu=True, restore_if_possible=True, batch_size=10):
             sess.close()
 
 if __name__ == "__main__":
-    train_network(use_gpu=True)
+    train_network(use_gpu=False)

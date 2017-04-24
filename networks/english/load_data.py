@@ -135,7 +135,7 @@ def generate_mnist_grid(label,overlap,train=True):
         c = np.random.randint(0,len(label))
         vals += str(label_map[label[c]])
         label = label[:c] + label[c+1:]
-    while len(vals) < 4:
+    for i in range(4-len(vals)):
         c = np.random.randint(0,10)
         if c not in orig:
             vals += str(c)
