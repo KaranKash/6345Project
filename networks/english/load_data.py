@@ -130,12 +130,11 @@ def generate_mnist_grid(label,overlap,train=True):
     vals = ""
     orig = [label_map[c] for c in label]
     for i in range(overlap):
-        print(overlap, i, len(label), vals)
         c = np.random.randint(0,len(label))
         vals += str(label_map[label[c]])
         label = label[:c] + label[c+1:]
     while len(vals) < 4:
-        c = np.random.randint(0,len(label))
+        c = np.random.randint(0,10)
         if c not in orig:
             vals += str(c)
     return makeGrid(vals,train=train)
