@@ -10,28 +10,26 @@ SAVED_MODEL_PATH = os.path.join(SAVED_MODEL_DIR, "model.ckpt")
 
 def forward_propagation(images, mnist, nummatches, train=False, dropout=False):
     audio_network = stack_layers([
-        conv_layer(2, 23, 64, name='audio-conv1-layer',padding='VALID'),
-        pool_layer(3,1,1,1,name="audio-max-pool1-layer",padding='VALID'),
-        conv_layer(5, 1, 256, name='audio-conv2-layer',padding='VALID'),
-        pool_layer(3,1,1,1,name="audio-max-pool2-layer",padding='VALID'),
-        conv_layer(8, 1, 512, name='audio-conv3-layer',padding='VALID'),
+        conv_layer(5, 23, 64, name='audio-conv1-layer',padding='VALID'),
+        pool_layer(3,4,1,2,name="audio-max-pool1-layer",padding='VALID'),
+        conv_layer(5, 1, 224, name='audio-conv2-layer',padding='VALID'),
+        pool_layer(3,4,1,2,name="audio-max-pool2-layer",padding='VALID'),
+        conv_layer(5, 1, 512, name='audio-conv3-layer',padding='VALID'),
         mean_pool_layer(name="audio-max-pool1-layer",padding='VALID')
     ])
 
     image_network = stack_layers([
-        conv_layer(5, 5, 32, name='image-conv1-layer'),
+        conv_layer(10, 10, 32, name='image-conv1-layer'),
         pool_layer(2,2,2,2,name="image-max-pool1-layer"),
-        conv_layer(5, 5, 64, name='image-conv2-layer'),
+        conv_layer(10, 10, 64, name='image-conv2-layer'),
         pool_layer(2,2,2,2,name="image-max-pool2-layer"),
         flatten(),
         fully_connected_layer(512, keep_prob=0.5 if train and dropout else 1.0, name="image-local1-layer"),
-        fully_connected_layer(512, keep_prob=1.0, name="image-local2-layer"),
         softmax_layer(10, name="image-softmax-layer")
     ])
 
     classification_network = stack_layers([
-        fully_connected_layer(1024, keep_prob=0.5 if train and dropout else 1.0, name="class-local1-layer"),
-        fully_connected_layer(512, keep_prob=1.0, name="class-local2-layer"),
+        fully_connected_layer(512, keep_prob=0.5 if train and dropout else 1.0, name="class-local1-layer"),
         softmax_layer(5, name="class-softmax-layer")
     ])
     specs = tf.concat([images]*10,0)
