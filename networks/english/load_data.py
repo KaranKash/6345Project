@@ -139,7 +139,6 @@ def generate_mnist_grid(label,overlap,train=True):
         c = np.random.randint(0,10)
         if c not in orig:
             vals += str(c)
-    print(vals)
     return makeGrid(vals,train=train)
 
 def countOverlap(string1,string2):
