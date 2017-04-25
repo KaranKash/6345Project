@@ -19,7 +19,7 @@ window_size = 400
 
 label_map = {'1':1,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'o':0,'z':0}
 # perms = [''.join(p) for p in permutations('0123456789')]
-choices = [[0], [0,1,1], [0,1,1,2,2,2], [0,1,1,2,2,2,3,3,3,3], [0,1,1,2,2,2,3,3,3,3,4,4,4,4,4]]
+choices = [[0], [0,1,1], [0,1,1,2,2,2], [0,1,1,2,2,2,3,3,3,3], [0,1,1,2,2,3,3,3,4,4,4,4,4]]
 
 def load_from_file(f):
     '''Given a file, returns a list of the string values in that value'''
@@ -118,8 +118,8 @@ def generate_mnist_set(labels,train=True):
     matches = []
     for i in range(10):
         for label in labels:
-            # label = str(label) # python 2.7
-            label = str(label)[2:-1] # python3
+            label = str(label) # python 2.7
+            # label = str(label)[2:-1] # python3
             overlap = random.choice(choices[len(label)])
             grid = generate_mnist_grid(label,overlap,train)
             out.append(grid)

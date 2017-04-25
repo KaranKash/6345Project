@@ -30,7 +30,7 @@ def mean_pool_layer(name='pool1-layer', padding='SAME'):
 
 def norm_layer(name='norm1-layer'):
     def make_layer(input_to_layer):
-        return tf.nn.local_response_normalization(input_to_layer, depth_radius=5, bias=1.0, alpha=0.001 / 9.0, beta=0.75, name=name)
+        return tf.nn.local_response_normalization(input_to_layer, depth_radius=5, alpha=0.0001, beta=0.75, name=name)
     return make_layer
 
 def flatten():

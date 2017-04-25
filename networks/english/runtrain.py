@@ -17,7 +17,7 @@ def optimizer(num_batches_per_epoch):
         opt = tf.train.AdamOptimizer(0.00001)
         return increment_step, opt, global_step
 
-def train_network(use_gpu=True, restore_if_possible=True, batch_size=25):
+def train_network(use_gpu=True, restore_if_possible=True, batch_size=30):
     with tf.device("/cpu:0"):
         # Build graph:
         image_batch, label_batch, num_examples_per_epoch = input_graph(training=True, batch_size=batch_size)
@@ -91,4 +91,4 @@ def train_network(use_gpu=True, restore_if_possible=True, batch_size=25):
             sess.close()
 
 if __name__ == "__main__":
-    train_network(use_gpu=False)
+    train_network(use_gpu=True)
