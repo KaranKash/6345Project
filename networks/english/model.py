@@ -13,6 +13,7 @@ def forward_propagation(images, mnist, nummatches, train=False, dropout=False):
         conv_layer(5, 23, 64, name='audio-conv1-layer',padding='VALID'),
         norm_layer(name='audio-norm1-layer'),
         pool_layer(3,1,1,1,name="audio-max-pool1-layer",padding='VALID'),
+        flatten(),
         fully_connected_layer(1024, keep_prob=0.5 if train and dropout else 1.0, name="audio-local1-layer"),
         fully_connected_layer(1024, keep_prob=0.5 if train and dropout else 1.0, name="audio-local2-layer")
     ])
