@@ -44,7 +44,7 @@ def evaluate_network(use_gpu=True, restore_if_possible=True, batch_size=30):
                     # evaluate
                     j = 0
                     tot_correct = 0
-                    while j * batch_size*10 < num_examples_per_epoch and not coord.should_stop():
+                    while j * batch_size < num_examples_per_epoch and not coord.should_stop():
                         labels = sess.run([label_batch])
                         # print("labels",labels[0],labels)
                         labels = labels[0]
