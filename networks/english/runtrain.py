@@ -26,7 +26,7 @@ def train_network(use_gpu=True, restore_if_possible=True, batch_size=30):
         num_batches_per_epoch = num_examples_per_epoch // batch_size
         increment_step, opt, step = optimizer(num_batches_per_epoch)
         with tf.device("/gpu:0" if use_gpu else "/cpu:0"):
-            correct, loss, _ = forward_propagation(image_batch, mnist, nummatches, train=True, dropout=True)
+            correct, loss, _, __ = forward_propagation(image_batch, mnist, nummatches, train=True, dropout=True)
             grads = opt.compute_gradients(loss)
         with tf.control_dependencies([opt.apply_gradients(grads), increment_step]):
             train = tf.no_op(name='train')

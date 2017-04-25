@@ -57,4 +57,4 @@ def forward_propagation(images, mnist, nummatches, train=False, dropout=False):
         labels_one_hot = tf.one_hot(nummatches, 5, on_value=1.0, off_value=0.0)
         loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=labels_one_hot))
 
-    return correct, loss, proba
+    return correct, loss, proba, prediction
