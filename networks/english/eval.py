@@ -59,7 +59,7 @@ def evaluate_network(use_gpu=True, restore_if_possible=True, batch_size=30):
                         n2 = sum(x == 2 for x in nummatches_batch)
                         n3 = sum(x == 3 for x in nummatches_batch)
                         n4 = sum(x == 4 for x in nummatches_batch)
-                        print("Batch %d/%d. Acc %.3f. Loss %.2f. Zeros %.2f. Ones %.2f. Twos %.2f. Threes %.2f. Fours %.2f." % (j+1, num_batches_per_epoch, 100*num_correct / float(batch_size*10), batch_loss, n0/float(batch_size*10), n1/float(batch_size*10), n2/float(batch_size*10), n3/float(batch_size*10), n4/float(batch_size*10)))
+                        print("Batch %d/%d. Acc %.3f. Zeros %.2f. Ones %.2f. Twos %.2f. Threes %.2f. Fours %.2f." % (j+1, num_batches_per_epoch, 100*num_correct / float(batch_size*10), n0/float(batch_size*10), n1/float(batch_size*10), n2/float(batch_size*10), n3/float(batch_size*10), n4/float(batch_size*10)))
                         j += 1
                     total = j * batch_size
                     acc = tot_correct / float(total)
