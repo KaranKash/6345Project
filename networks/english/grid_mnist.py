@@ -94,10 +94,12 @@ def makeGrid(chars, train=True, N=2):
         # for i in gridIndexes:
         #     grid[i].imshow( output[gridIndexes[i]], cmap='gray' )
 
-        row1 = np.hstack((output[gridIndexes[0]],output[gridIndexes[1]]))
-        row2 = np.hstack((output[gridIndexes[2]],output[gridIndexes[3]]))
-        out = np.vstack((row1,row2))
-        return out
+        return [output[gridIndexes[0]],output[gridIndexes[1]],output[gridIndexes[2]],output[gridIndexes[3]]]
+
+        # row1 = np.hstack((output[gridIndexes[0]],output[gridIndexes[1]]))
+        # row2 = np.hstack((output[gridIndexes[2]],output[gridIndexes[3]]))
+        # out = np.vstack((row1,row2))
+        # return out
 
     else:
         print("Please ensure proper input dimensions")

@@ -17,11 +17,11 @@ def optimizer(num_batches_per_epoch):
         opt = tf.train.AdamOptimizer(0.00001)
         return increment_step, opt, global_step
 
-def train_network(use_gpu=True, restore_if_possible=True, batch_size=10):
+def train_network(use_gpu=True, restore_if_possible=True, batch_size=25):
     with tf.device("/cpu:0"):
         # Build graph:
         image_batch, label_batch, num_examples_per_epoch = input_graph(training=True, batch_size=batch_size)
-        mnist = tf.placeholder(tf.float32, shape=(batch_size*10, IMAGE_SIZE*2, IMAGE_SIZE*2, NUM_CHANNELS))
+        mnist = tf.placeholder(tf.float32, shape=(batch_size*10, 4, IMAGE_SIZE, IMAGE_SIZE, NUM_CHANNELS))
         nummatches = tf.placeholder(tf.int32, shape=(batch_size*10,))
         num_batches_per_epoch = num_examples_per_epoch // batch_size
         increment_step, opt, step = optimizer(num_batches_per_epoch)

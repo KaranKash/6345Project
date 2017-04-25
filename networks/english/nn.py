@@ -2,13 +2,16 @@ import tensorflow as tf
 from utils import *
 from functools import reduce
 
-def conv_layer(height, width, channels, name='conv1-layer', reuse=False, padding='SAME'):
+def conv_layer(height, width, channels, name='conv1-layer', padding='SAME'):
     def make_layer(input_to_layer):
-        with tf.variable_scope(name, values=[input_to_layer], reuse=reuse):
-            # weights = weight_variable([height, width, input_to_layer.get_shape()[3], channels])
-            weights = tf.get_variable("weights", [height, width, input_to_layer.get_shape()[3], channels], initializer=tf.truncated_normal_initializer(stddev=0.1, dtype=tf.float32))
-            # bias = bias_variable(channels,const=0.0)
-            bias = tf.get_variable("bias", [channels], initializer=tf.constant_initializer(0.0, dtype=tf.float32))
+        with tf.variable_scope(name, values=[input_to_layer]) as scope:
+            try:
+                weights = tf.get_variable("weights", [height, width, input_to_layer.get_shape()[3], channels], initializer=tf.truncated_normal_initializer(stddev=0.1, dtype=tf.float32))
+                bias = tf.get_variable("bias", [channels], initializer=tf.constant_initializer(0.0, dtype=tf.float32))
+            except ValueError:
+                scope.reuse_variables()
+                weights = tf.get_variable("weights", [height, width, input_to_layer.get_shape()[3], channels], initializer=tf.truncated_normal_initializer(stddev=0.1, dtype=tf.float32))
+                bias = tf.get_variable("bias", [channels], initializer=tf.constant_initializer(0.0, dtype=tf.float32))
         conv = tf.nn.conv2d(input_to_layer, weights, [1, 1, 1, 1], padding=padding)
         preactivation = tf.nn.bias_add(conv, bias)
         out = tf.nn.relu(preactivation)
@@ -35,13 +38,16 @@ def flatten():
         return tf.reshape(inp, [tf.shape(inp)[0], reduce(lambda x, y: int(x) * int(y), inp.get_shape()[1:], 1)])
     return make_layer
 
-def fully_connected_layer(size, keep_prob=1.0, name='fc-layer',reuse=False):
+def fully_connected_layer(size, keep_prob=1.0, name='fc-layer'):
     def make_layer(input_to_layer):
-        with tf.variable_scope(name, values=[input_to_layer],reuse=reuse):
-            # weights = weight_variable([input_to_layer.get_shape()[1], size])
-            weights = tf.get_variable("weights", [input_to_layer.get_shape()[1], size], initializer=tf.truncated_normal_initializer(stddev=0.1, dtype=tf.float32))
-            # bias = bias_variable(size)
-            bias = tf.get_variable("bias", [size], initializer=tf.constant_initializer(0.0, dtype=tf.float32))
+        with tf.variable_scope(name, values=[input_to_layer]) as scope:
+            try:
+                weights = tf.get_variable("weights", [input_to_layer.get_shape()[1], size], initializer=tf.truncated_normal_initializer(stddev=0.1, dtype=tf.float32))
+                bias = tf.get_variable("bias", [size], initializer=tf.constant_initializer(0.0, dtype=tf.float32))
+            except ValueError:
+                scope.reuse_variables()
+                weights = tf.get_variable("weights", [input_to_layer.get_shape()[1], size], initializer=tf.truncated_normal_initializer(stddev=0.1, dtype=tf.float32))
+                bias = tf.get_variable("bias", [size], initializer=tf.constant_initializer(0.0, dtype=tf.float32))
         preactivation = tf.matmul(input_to_layer, weights) + bias
         full_output = tf.nn.relu(preactivation)
         output = tf.nn.dropout(full_output, keep_prob=keep_prob)

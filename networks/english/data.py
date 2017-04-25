@@ -9,8 +9,8 @@ DIR = os.path.dirname(os.path.realpath(__file__))
 testdir = '../../English/test'
 traindir = '../../English/train'
 
-NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = 11282 # length 4 or less
-NUM_EXAMPLES_PER_EPOCH_FOR_EVAL = 1092 # length 4 or less
+NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = 6796 # length 2-4
+NUM_EXAMPLES_PER_EPOCH_FOR_EVAL = 628 # length 2-4
 IMAGE_WIDTH = 23
 IMAGE_HEIGHT = 400
 NUM_CHANNELS = 1
@@ -31,12 +31,12 @@ def input_graph(training=True, partition='test', batch_size=256):
     with tf.name_scope("input"):
         if training or partition == 'train':
             usedir = traindir
-            target = "train.csv"
+            target = "train2.csv"
             num_examples_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN
 
         elif partition == 'test':
             usedir = testdir
-            target = "test.csv"
+            target = "test2.csv"
             num_examples_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_EVAL
 
         if not os.path.isfile(target):
