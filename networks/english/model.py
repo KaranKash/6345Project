@@ -28,9 +28,12 @@ def forward_propagation(images, mnist, nummatches, train=False, dropout=False):
         fully_connected_layer(512, keep_prob=1.0, name="image-local2-layer")
     ])
 
+    image_joint_network = stack_layers([
+        fully_connected_layer(1024, keep_prob=1.0, name="joint-local-layer"),
+    ])
+
     classification_network = stack_layers([
-        fully_connected_layer(1024, keep_prob=1.0, name="class-local1-layer"),
-        fully_connected_layer(256, keep_prob=1.0, name="class-local2-layer"),
+        fully_connected_layer(512, keep_prob=1.0, name="class-local2-layer"),
         softmax_layer(5, name="class-softmax-layer")
     ])
 
@@ -40,7 +43,8 @@ def forward_propagation(images, mnist, nummatches, train=False, dropout=False):
     m2 = image_network(mnistset[1])
     m3 = image_network(mnistset[2])
     m4 = image_network(mnistset[3])
-    t1 = tf.concat([m1,m2,m3,m4],1)
+    tmp = tf.concat([m1,m2,m3,m4],1)
+    t1 = image_joint_network(tmp)
     # t1 = image_network(mnist)[0]
     t2 = tf.squeeze(audio_network(specs))
     embeddings = tf.concat([t1,t2],1)
