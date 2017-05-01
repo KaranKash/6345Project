@@ -79,8 +79,8 @@ def train_network(partition="train", use_gpu=True, restore_if_possible=True, bat
 
                     if in_batch == num_batches_per_epoch:
                         # Checkpoint, save the model:
-                        summary = sess.run(summaries)
-                        summary_writer.add_summary(summary)
+                        # summary = sess.run(summaries)
+                        # summary_writer.add_summary(summary)
                         print("Saving to %s" % SAVED_MODEL_PATH)
                         saver.save(sess, SAVED_MODEL_PATH, global_step=i)
                         # evaluate(partition="test")
@@ -96,4 +96,4 @@ def train_network(partition="train", use_gpu=True, restore_if_possible=True, bat
             sess.close()
 
 if __name__ == "__main__":
-    train_network(use_gpu=False)
+    train_network(use_gpu=True)
