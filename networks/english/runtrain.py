@@ -3,6 +3,7 @@ from utils import *
 from nn import *
 from model import *
 from data import *
+from variable_data import *
 from load_data import *
 import numpy as np
 from multiprocessing import Pool
@@ -10,23 +11,26 @@ from contextlib import closing
 
 MAX_EPOCHS = 1.0
 
-def optimizer(num_batches_per_epoch):
+def optimizer():
     with tf.variable_scope("Optimizer"):
         global_step = tf.Variable(initial_value=0, trainable=False)
         increment_step = global_step.assign_add(1)
         opt = tf.train.AdamOptimizer(0.00001)
         return increment_step, opt, global_step
 
-def train_network(use_gpu=True, restore_if_possible=True, batch_size=50):
+def train_network(partition="train", use_gpu=True, restore_if_possible=True, batch_size=50):
     with tf.device("/cpu:0"):
         # Build graph:
-        image_batch, label_batch, num_examples_per_epoch = input_graph(training=True, batch_size=batch_size)
+        all_spectrograms, all_labels, num_examples_per_epoch = variable_input_graph(partition)
+        # image_batch, label_batch, num_examples_per_epoch = input_graph(training=True, batch_size=batch_size)
+        maximum = tf.placeholder(tf.int32, shape=())
+        specs = tf.placeholder(tf.float32, shape=(batch_size, None, IMAGE_WIDTH, NUM_CHANNELS))
         mnist = tf.placeholder(tf.float32, shape=(batch_size*10, 4, IMAGE_SIZE, IMAGE_SIZE, NUM_CHANNELS))
         nummatches = tf.placeholder(tf.int32, shape=(batch_size*10,))
         num_batches_per_epoch = num_examples_per_epoch // batch_size
-        increment_step, opt, step = optimizer(num_batches_per_epoch)
+        increment_step, opt, step = optimizer()
         with tf.device("/gpu:0" if use_gpu else "/cpu:0"):
-            correct, loss, _, __ = forward_propagation(image_batch, mnist, nummatches, train=True, dropout=True)
+            correct, loss, _, __ = forward_propagation(specs, mnist, nummatches, batch_size, maximum, train=True, dropout=True)
             grads = opt.compute_gradients(loss)
         with tf.control_dependencies([opt.apply_gradients(grads), increment_step]):
             train = tf.no_op(name='train')
@@ -53,13 +57,14 @@ def train_network(use_gpu=True, restore_if_possible=True, batch_size=50):
             epoch_count = 1
             try:
                 # training
-                while not coord.should_stop():
-                    labels = sess.run([label_batch])
-                    # print("labels",labels[0],labels)
-                    labels = labels[0]
+                for b in range(int(100*NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN) // batch_size):
+                    offset = (b * batch_size) % (NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN - batch_size)
+                    spectrograms = all_spectrograms[offset:(offset + batch_size)]
+                    spectrograms, maxlen = pad(spectrograms)
+                    labels = all_labels[offset:(offset + batch_size)]
                     mnist_batch, nummatches_batch = generate_mnist_set(labels)
                     _, num_correct, batch_loss, i = sess.run([train, correct, loss, step], feed_dict={
-                        mnist: mnist_batch, nummatches: nummatches_batch
+                        specs: spectrograms, mnist: mnist_batch, nummatches: nummatches_batch, maximum: maxlen
                     })
                     in_batch = i % num_batches_per_epoch
                     if in_batch == 0:
@@ -91,4 +96,4 @@ def train_network(use_gpu=True, restore_if_possible=True, batch_size=50):
             sess.close()
 
 if __name__ == "__main__":
-    train_network(use_gpu=True)
+    train_network(use_gpu=False)

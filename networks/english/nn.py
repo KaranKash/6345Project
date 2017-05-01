@@ -1,6 +1,7 @@
 import tensorflow as tf
 from utils import *
 from functools import reduce
+import tflearn
 
 def conv_layer(height, width, channels, name='conv1-layer', padding='SAME'):
     def make_layer(input_to_layer):
@@ -25,7 +26,8 @@ def pool_layer(height, width, vstride, hstride, name='pool1-layer', padding='SAM
 
 def mean_pool_layer(name='pool1-layer', padding='SAME'):
     def make_layer(input_to_layer):
-        return tf.nn.avg_pool(input_to_layer, ksize=[1, input_to_layer.get_shape()[1], 1, 1], strides=[1, 1, 1, 1], padding=padding, name=name)
+        # print("MEAN INPUT", input_to_layer.get_shape())
+        return tflearn.layers.conv.global_avg_pool(input_to_layer, name=name)
     return make_layer
 
 def norm_layer(name='norm1-layer'):
@@ -35,7 +37,8 @@ def norm_layer(name='norm1-layer'):
 
 def flatten():
     def make_layer(inp):
-        return tf.reshape(inp, [tf.shape(inp)[0], reduce(lambda x, y: int(x) * int(y), inp.get_shape()[1:], 1)])
+        return tf.contrib.layers.flatten(inp)
+        # return tf.reshape(inp, [tf.shape(inp)[0], reduce(lambda x, y: int(x) * int(y), inp.get_shape()[1:], 1)])
     return make_layer
 
 def fully_connected_layer(size, keep_prob=1.0, name='fc-layer'):
