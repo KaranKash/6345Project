@@ -3,22 +3,26 @@ from utils import *
 from nn import *
 from model import *
 from data import *
+from variable_data import *
 from load_data import *
 import numpy as np
 from multiprocessing import Pool
 from contextlib import closing
 
-def evaluate_network(use_gpu=True, restore_if_possible=True, batch_size=30):
+def evaluate_network(partition="test", use_gpu=True, restore_if_possible=True, batch_size=50):
     g = tf.Graph()
     with g.as_default():
         with tf.device("/cpu:0"):
             # Build graph:
-            image_batch, label_batch, num_examples_per_epoch = input_graph(training=False, batch_size=batch_size)
+            all_spectrograms, all_labels, num_examples_per_epoch = variable_input_graph(partition)
+            # image_batch, label_batch, num_examples_per_epoch = input_graph(training=True, batch_size=batch_size)
+            maximum = tf.placeholder(tf.int32, shape=())
+            specs = tf.placeholder(tf.float32, shape=(batch_size, None, IMAGE_WIDTH, NUM_CHANNELS))
             mnist = tf.placeholder(tf.float32, shape=(batch_size*10, 4, IMAGE_SIZE, IMAGE_SIZE, NUM_CHANNELS))
             nummatches = tf.placeholder(tf.int32, shape=(batch_size*10,))
             num_batches_per_epoch = num_examples_per_epoch // batch_size
             with tf.device("/gpu:0" if use_gpu else "/cpu:0"):
-                correct, loss, _, prediction= forward_propagation(image_batch, mnist, nummatches, train=False, dropout=False)
+                correct, loss, _, prediction= forward_propagation(specs, mnist, nummatches, batch_size, maximum, train=False, dropout=False)
             summaries = tf.summary.merge_all()
 
             # Train:
@@ -45,12 +49,13 @@ def evaluate_network(use_gpu=True, restore_if_possible=True, batch_size=30):
                     j = 0
                     tot_correct = 0
                     while j * batch_size < num_examples_per_epoch and not coord.should_stop():
-                        labels = sess.run([label_batch])
-                        # print("labels",labels[0],labels)
-                        labels = labels[0]
-                        mnist_batch, nummatches_batch = generate_mnist_set(labels,train=False)
+                        offset = (j * batch_size) % (num_examples_per_epoch - batch_size)
+                        spectrograms = all_spectrograms[offset:(offset + batch_size)]
+                        spectrograms, maxlen = pad(spectrograms)
+                        labels = all_labels[offset:(offset + batch_size)]
+                        mnist_batch, nummatches_batch = generate_mnist_set(labels)
                         num_correct, preds = sess.run([correct, prediction], feed_dict={
-                            mnist: mnist_batch, nummatches: nummatches_batch
+                            specs: spectrograms, mnist: mnist_batch, nummatches: nummatches_batch, maximum: maxlen
                         })
                         tot_correct += num_correct
                         recordLosses(preds,nummatches_batch)
