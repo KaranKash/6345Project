@@ -57,8 +57,8 @@ def train_network(partition="train", use_gpu=True, restore_if_possible=True, bat
             epoch_count = 1
             try:
                 # training
-                for b in range(int(100*NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN) // batch_size):
-                    offset = (b * batch_size) % (NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN - batch_size)
+                for b in range(int(100*num_examples_per_epoch) // batch_size):
+                    offset = (b * batch_size) % (num_examples_per_epoch - batch_size)
                     spectrograms = all_spectrograms[offset:(offset + batch_size)]
                     spectrograms, maxlen = pad(spectrograms)
                     labels = all_labels[offset:(offset + batch_size)]
