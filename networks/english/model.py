@@ -14,9 +14,9 @@ def forward_propagation(images, mnist, nummatches, batch_size, maxlen, train=Fal
     audio_network = stack_layers([
         conv_layer(5, 23, 64, name='audio-conv1-layer',padding='VALID'),
         pool_layer(4,1,2,1,name="audio-max-pool1-layer",padding='VALID'),
-        conv_layer(25, 1, 512, name='audio-conv2-layer',padding='VALID'),
-        # pool_layer(4,1,2,1,name="audio-max-pool2-layer",padding='VALID'),
-        # conv_layer(25, 1, 1024, name='audio-conv3-layer',padding='VALID'),
+        conv_layer(10, 1, 512, name='audio-conv2-layer',padding='VALID'),
+        pool_layer(4,1,2,1,name="audio-max-pool2-layer",padding='VALID'),
+        conv_layer(15, 1, 1024, name='audio-conv3-layer',padding='VALID'),
         mean_pool_layer(name="audio-mean-pool-layer",padding='VALID')
     ])
 
@@ -31,11 +31,11 @@ def forward_propagation(images, mnist, nummatches, batch_size, maxlen, train=Fal
     ])
 
     image_joint_network = stack_layers([
-        fully_connected_layer(512, keep_prob=1.0, name="joint-local-layer"),
+        fully_connected_layer(1024, keep_prob=1.0, name="joint-local-layer"),
     ])
 
     classification_network = stack_layers([
-        fully_connected_layer(128, keep_prob=1.0, name="class-local2-layer"),
+        fully_connected_layer(256, keep_prob=1.0, name="class-local2-layer"),
         softmax_layer(5, name="class-softmax-layer")
     ])
 
@@ -49,7 +49,7 @@ def forward_propagation(images, mnist, nummatches, batch_size, maxlen, train=Fal
     t1 = image_joint_network(tmp)
     # t1 = image_network(mnist)[0]
     tmp = audio_network(specs)
-    t2 = tf.reshape(tmp, [batch_size*10, 512])
+    t2 = tf.reshape(tmp, [batch_size*10, 1024])
     embeddings = tf.concat([t1,t2],1)
     # print("embeddings",embeddings.get_shape())
     _, logits, proba, prediction = classification_network(embeddings)
