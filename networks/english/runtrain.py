@@ -9,8 +9,6 @@ import numpy as np
 from multiprocessing import Pool
 from contextlib import closing
 
-MAX_EPOCHS = 1.0
-
 def optimizer():
     with tf.variable_scope("Optimizer"):
         global_step = tf.Variable(initial_value=0, trainable=False)
@@ -57,8 +55,9 @@ def train_network(partition="train", use_gpu=True, restore_if_possible=True, bat
             epoch_count = 1
             try:
                 # training
-                for b in range(int(100*num_examples_per_epoch) // batch_size):
-                    offset = (b * batch_size) % (num_examples_per_epoch - batch_size)
+                for b in range(int(num_examples_per_epoch // batch_size * 100)):
+                    # offset = (b * batch_size) % (num_examples_per_epoch - batch_size)
+                    offset = np.random.randint(0,num_examples_per_epoch - batch_size)
                     spectrograms = all_spectrograms[offset:(offset + batch_size)]
                     spectrograms, maxlen = pad(spectrograms)
                     labels = all_labels[offset:(offset + batch_size)]
