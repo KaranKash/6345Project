@@ -17,7 +17,7 @@ def optimizer():
         opt = tf.train.AdamOptimizer(0.00001)
         return increment_step, opt, global_step
 
-def train_network(training=True, use_gpu=True, restore_if_possible=True, batch_size=15):
+def train_network(training=True, use_gpu=True, restore_if_possible=True, batch_size=12):
     with tf.device("/cpu:0"):
 
         MAX_EPOCHS = 200.0
