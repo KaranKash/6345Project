@@ -47,7 +47,7 @@ def forward_propagation(images, mnist, nummatches, batch_size, maxlen, train=Fal
     t1 = image_joint_network(tmp)
     # t1 = image_network(mnist)[0]
     tmp = audio_network(specs)
-    t2 = tf.reshape(tmp, [batch_size*10, 1024])
+    t2 = tf.reshape(tmp, [batch_size*10, 512])
     embeddings = tf.concat([t1,t2],1)
     # print("embeddings",embeddings.get_shape())
     _, logits, proba, prediction = classification_network(embeddings)
