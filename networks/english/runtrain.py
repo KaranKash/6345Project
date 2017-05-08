@@ -85,7 +85,7 @@ def train_network(training=True, use_gpu=True, restore_if_possible=True, batch_s
                     spectrograms = all_spectrograms[offset:(offset + batch_size)]
                     spectrograms, maxlen = pad(spectrograms)
                     labels = all_labels[offset:(offset + batch_size)]
-                    mnist_batch, nummatches_batch = generate_mnist_set(labels)
+                    mnist_batch, nummatches_batch = generate_mnist_set(labels, COPY)
                     _, num_correct, batch_loss, i = sess.run([train, correct, loss, step], feed_dict={
                         specs: spectrograms, mnist: mnist_batch, nummatches: nummatches_batch, maximum: maxlen
                     })
@@ -123,7 +123,7 @@ def train_network(training=True, use_gpu=True, restore_if_possible=True, batch_s
                     spectrograms = eval_spectrograms[offset:(offset + eval_batch_size)]
                     spectrograms, maxlen = pad(spectrograms)
                     labels = eval_labels[offset:(offset + eval_batch_size)]
-                    mnist_batch, nummatches_batch = generate_mnist_set(labels)
+                    mnist_batch, nummatches_batch = generate_mnist_set(labels, COPY)
                     _, num_correct, i, preds = sess.run([test, e_correct, e_step, e_predictions], feed_dict={
                         e_specs: spectrograms, e_mnist: mnist_batch, e_nummatches: nummatches_batch, e_maximum: maxlen
                     })
