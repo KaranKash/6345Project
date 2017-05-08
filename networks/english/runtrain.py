@@ -46,7 +46,7 @@ def train_network(training=True, use_gpu=True, restore_if_possible=True, batch_s
         with tf.device("/gpu:0" if use_gpu else "/cpu:0"):
             e_correct, _, __, e_predictions = forward_propagation(e_specs, e_mnist, e_nummatches, 25, e_maximum, train=False, dropout=False)
         with tf.control_dependencies([e_increment_step]):
-            train = tf.no_op(name='test')
+            test = tf.no_op(name='test')
 
         # summaries = tf.summary.merge_all()
 
@@ -92,7 +92,7 @@ def train_network(training=True, use_gpu=True, restore_if_possible=True, batch_s
                     n4 = sum(x == 4 for x in nummatches_batch)
                     print("Epoch %d. Batch %d/%d. Acc %.3f. Loss %.2f. Zeros %.2f. Ones %.2f. Twos %.2f. Threes %.2f. Fours %.2f." % (epoch_count, in_batch, num_batches_per_epoch, 100*num_correct / float(batch_size*10), batch_loss, n0/float(batch_size*10), n1/float(batch_size*10), n2/float(batch_size*10), n3/float(batch_size*10), n4/float(batch_size*10)))
                     epoch_count = (i // (num_batches_per_epoch)) + 1
-                    
+
                     # if in_batch == num_batches_per_epoch:
                     #     # Checkpoint, save the model:
                     #     # summary = sess.run(summaries)
