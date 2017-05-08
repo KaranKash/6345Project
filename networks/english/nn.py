@@ -60,22 +60,17 @@ def fully_connected_layer(size, keep_prob=1.0, name='fc-layer'):
 
 def softmax_layer(classes, name='softmax-layer'):
     def make_layer(input_to_layer):
-        with tf.variable_scope(name, values=[input_to_layer]):
-            with tf.name_scope('weights'):
-                fanin = input_to_layer.get_shape()[1]
-                try:
-                    weights = weight_variable([fanin, classes])
-                    variable_summaries(weights)
-                except ValueError:
-                    scope.reuse_variables()
-                    weights = weight_variable([fanin, classes])
-            with tf.name_scope('biases'):
-                try:
-                    bias = bias_variable(classes)
-                    variable_summaries(bias)
-                except ValueError:
-                    scope.reuse_variables()
-                    bias = bias_variable(classes)
+        with tf.variable_scope(name, values=[input_to_layer]) as scope:
+            fanin = input_to_layer.get_shape()[1]
+            try:
+                weights = weight_variable([fanin, classes])
+                bias = bias_variable(classes)
+                variable_summaries(weights)
+                variable_summaries(bias)
+            except ValueError:
+                scope.reuse_variables()
+                weights = weight_variable([fanin, classes])
+                bias = bias_variable(classes)
             with tf.name_scope('preactivation'):
                 preactivation = tf.matmul(input_to_layer, weights) + bias
                 logits = preactivation
