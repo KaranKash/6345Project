@@ -9,6 +9,7 @@ SAVED_MODEL_DIR = os.path.join(DIR, "model")
 SAVED_MODEL_PATH = os.path.join(SAVED_MODEL_DIR, "model.ckpt")
 IMAGE_WIDTH = 23
 NUM_CHANNELS = 1
+COPY = 10
 
 def forward_propagation(images, mnist, nummatches, batch_size, maxlen, train=False, dropout=False):
     audio_network = stack_layers([
@@ -37,7 +38,7 @@ def forward_propagation(images, mnist, nummatches, batch_size, maxlen, train=Fal
         softmax_layer(5, name="class-softmax-layer")
     ])
 
-    specs = tf.concat([images]*10,0)
+    specs = tf.concat([images]*COPY,0)
     mnistset = tf.unstack(mnist, axis=1)
     m1 = image_network(mnistset[0])
     m2 = image_network(mnistset[1])
@@ -47,7 +48,7 @@ def forward_propagation(images, mnist, nummatches, batch_size, maxlen, train=Fal
     t1 = image_joint_network(tmp)
     # t1 = image_network(mnist)[0]
     tmp = audio_network(specs)
-    t2 = tf.reshape(tmp, [batch_size*10, 512])
+    t2 = tf.reshape(tmp, [batch_size*COPY, 512])
     embeddings = tf.concat([t1,t2],1)
     # print("embeddings",embeddings.get_shape())
     _, logits, proba, prediction = classification_network(embeddings)

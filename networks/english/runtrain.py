@@ -10,8 +10,6 @@ from multiprocessing import Pool
 from contextlib import closing
 import pickle
 
-MAX_EPOCHS = 1.0
-
 def optimizer():
     with tf.variable_scope("Optimizer"):
         global_step = tf.Variable(initial_value=0, trainable=False)
@@ -19,8 +17,13 @@ def optimizer():
         opt = tf.train.AdamOptimizer(0.00001)
         return increment_step, opt, global_step
 
-def train_network(training=True, use_gpu=True, restore_if_possible=True, batch_size=50):
+def train_network(training=True, use_gpu=True, restore_if_possible=True, batch_size=12):
     with tf.device("/cpu:0"):
+
+        MAX_EPOCHS = 1.0
+        eval_batch_size = 12
+        eval_epochs = 10
+
         # setup metadata variables
         accuracies = []
         losses = []
@@ -31,8 +34,8 @@ def train_network(training=True, use_gpu=True, restore_if_possible=True, batch_s
         # image_batch, label_batch, num_examples_per_epoch = input_graph(training=True, batch_size=batch_size)
         maximum = tf.placeholder(tf.int32, shape=())
         specs = tf.placeholder(tf.float32, shape=(batch_size, None, IMAGE_WIDTH, NUM_CHANNELS))
-        mnist = tf.placeholder(tf.float32, shape=(batch_size*10, 4, IMAGE_SIZE, IMAGE_SIZE, NUM_CHANNELS))
-        nummatches = tf.placeholder(tf.int32, shape=(batch_size*10,))
+        mnist = tf.placeholder(tf.float32, shape=(batch_size*COPY, 4, IMAGE_SIZE, IMAGE_SIZE, NUM_CHANNELS))
+        nummatches = tf.placeholder(tf.int32, shape=(batch_size*COPY,))
         num_batches_per_epoch = num_examples_per_epoch // batch_size
         increment_step, opt, step = optimizer()
         with tf.device("/gpu:0" if use_gpu else "/cpu:0"):
@@ -44,20 +47,18 @@ def train_network(training=True, use_gpu=True, restore_if_possible=True, batch_s
         # Build graph eval:
         eval_spectrograms, eval_labels, e_num_examples_per_epoch = variable_input_graph(False)
         e_maximum = tf.placeholder(tf.int32, shape=())
-        e_specs = tf.placeholder(tf.float32, shape=(25, None, IMAGE_WIDTH, NUM_CHANNELS))
-        e_mnist = tf.placeholder(tf.float32, shape=(25*10, 4, IMAGE_SIZE, IMAGE_SIZE, NUM_CHANNELS))
-        e_nummatches = tf.placeholder(tf.int32, shape=(25*10,))
-        e_num_batches_per_epoch = e_num_examples_per_epoch // 25
+        e_specs = tf.placeholder(tf.float32, shape=(eval_batch_size, None, IMAGE_WIDTH, NUM_CHANNELS))
+        e_mnist = tf.placeholder(tf.float32, shape=(eval_batch_size*COPY, 4, IMAGE_SIZE, IMAGE_SIZE, NUM_CHANNELS))
+        e_nummatches = tf.placeholder(tf.int32, shape=(eval_batch_size*COPY,))
+        e_num_batches_per_epoch = e_num_examples_per_epoch // eval_batch_size
         e_increment_step, _, e_step = optimizer()
         with tf.device("/gpu:0" if use_gpu else "/cpu:0"):
-            e_correct, _, __, e_predictions = forward_propagation(e_specs, e_mnist, e_nummatches, 25, e_maximum, train=False, dropout=False)
+            e_correct, _, __, e_predictions = forward_propagation(e_specs, e_mnist, e_nummatches, eval_batch_size, e_maximum, train=False, dropout=False)
         with tf.control_dependencies([e_increment_step]):
             test = tf.no_op(name='test')
 
         # summaries = tf.summary.merge_all()
 
-
-        # Train:
         with tf.Session(config=tf.ConfigProto(allow_soft_placement=True,log_device_placement=False)) as sess:
             summary_writer = tf.summary.FileWriter('tflog', sess.graph)  # For logging for TensorBoard
 
@@ -91,13 +92,13 @@ def train_network(training=True, use_gpu=True, restore_if_possible=True, batch_s
                     in_batch = i % num_batches_per_epoch
                     if in_batch == 0:
                         in_batch = num_batches_per_epoch
-                    acc = 100*num_correct / float(batch_size*10)
+                    acc = 100*num_correct / float(batch_size*COPY)
                     n0 = sum(x == 0 for x in nummatches_batch)
                     n1 = sum(x == 1 for x in nummatches_batch)
                     n2 = sum(x == 2 for x in nummatches_batch)
                     n3 = sum(x == 3 for x in nummatches_batch)
                     n4 = sum(x == 4 for x in nummatches_batch)
-                    print("Train. Epoch %d. Batch %d/%d. Acc %.3f. Loss %.2f. Zeros %.2f. Ones %.2f. Twos %.2f. Threes %.2f. Fours %.2f." % (epoch_count, in_batch, num_batches_per_epoch, acc, batch_loss, n0/float(batch_size*10), n1/float(batch_size*10), n2/float(batch_size*10), n3/float(batch_size*10), n4/float(batch_size*10)))
+                    print("Train. Epoch %d. Batch %d/%d. Acc %.3f. Loss %.2f. Zeros %.2f. Ones %.2f. Twos %.2f. Threes %.2f. Fours %.2f." % (epoch_count, in_batch, num_batches_per_epoch, acc, batch_loss, n0/float(batch_size*COPY), n1/float(batch_size*COPY), n2/float(batch_size*COPY), n3/float(batch_size*COPY), n4/float(batch_size*COPY)))
                     epoch_count = (i // (num_batches_per_epoch)) + 1
 
                     if in_batch == num_batches_per_epoch:
@@ -117,11 +118,11 @@ def train_network(training=True, use_gpu=True, restore_if_possible=True, batch_s
                     pickle.dump(losses, f, protocol=2)
 
                 # evaluation
-                for b in range(int(e_num_examples_per_epoch // 25 * 10)):
-                    offset = np.random.randint(0,e_num_examples_per_epoch - 25)
-                    spectrograms = eval_spectrograms[offset:(offset + 25)]
+                for b in range(int(e_num_examples_per_epoch // eval_batch_size * eval_epochs)):
+                    offset = np.random.randint(0,e_num_examples_per_epoch - eval_batch_size)
+                    spectrograms = eval_spectrograms[offset:(offset + eval_batch_size)]
                     spectrograms, maxlen = pad(spectrograms)
-                    labels = eval_labels[offset:(offset + 25)]
+                    labels = eval_labels[offset:(offset + eval_batch_size)]
                     mnist_batch, nummatches_batch = generate_mnist_set(labels)
                     _, num_correct, i, preds = sess.run([test, e_correct, e_step, e_predictions], feed_dict={
                         e_specs: spectrograms, e_mnist: mnist_batch, e_nummatches: nummatches_batch, e_maximum: maxlen
@@ -135,7 +136,7 @@ def train_network(training=True, use_gpu=True, restore_if_possible=True, batch_s
                     n2 = sum(x == 2 for x in nummatches_batch)
                     n3 = sum(x == 3 for x in nummatches_batch)
                     n4 = sum(x == 4 for x in nummatches_batch)
-                    print("Test Acc %.3f. Zeros %.2f. Ones %.2f. Twos %.2f. Threes %.2f. Fours %.2f." % (100*num_correct / float(25*10), n0/float(25*10), n1/float(25*10), n2/float(25*10), n3/float(25*10), n4/float(25*10)))
+                    print("Test Acc %.3f. Zeros %.2f. Ones %.2f. Twos %.2f. Threes %.2f. Fours %.2f." % (100*num_correct / float(eval_batch_size*COPY), n0/float(eval_batch_size*COPY), n1/float(eval_batch_size*COPY), n2/float(eval_batch_size*COPY), n3/float(eval_batch_size*COPY), n4/float(eval_batch_size*COPY)))
 
                 with open('./results/confusion.pkl', 'wb') as f:
                     pickle.dump(confusion, f, protocol=2)
