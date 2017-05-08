@@ -109,11 +109,11 @@ def train_network(training=True, use_gpu=True, restore_if_possible=True, batch_s
                     labels = eval_labels[offset:(offset + 25)]
                     mnist_batch, nummatches_batch = generate_mnist_set(labels)
                     _, num_correct, i, preds = sess.run([test, e_correct, e_step, e_predictions], feed_dict={
-                        specs: spectrograms, mnist: mnist_batch, nummatches: nummatches_batch, maximum: maxlen
+                        e_specs: spectrograms, e_mnist: mnist_batch, e_nummatches: nummatches_batch, e_maximum: maxlen
                     })
-                    in_batch = i % e_num_batches_per_epoch
-                    if in_batch == 0:
-                        in_batch = e_num_batches_per_epoch
+                    # in_batch = i % e_num_batches_per_epoch
+                    # if in_batch == 0:
+                    #     in_batch = e_num_batches_per_epoch
                     n0 = sum(x == 0 for x in nummatches_batch)
                     n1 = sum(x == 1 for x in nummatches_batch)
                     n2 = sum(x == 2 for x in nummatches_batch)
