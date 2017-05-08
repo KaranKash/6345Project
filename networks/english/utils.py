@@ -22,5 +22,5 @@ def weight_variable(dims, stddev=0.1, wd=None):
 
 def bias_variable(dim, const=1.0):
     with tf.device("/cpu:0"):
-        var = tf.get_variable("bias", [dim], initializer=tf.constant_initializer(const, dtype=tf.float32))
+        var = tf.get_variable("bias", dim, initializer=tf.constant_initializer(const, dtype=tf.float32))
     return var
