@@ -9,7 +9,7 @@ import numpy as np
 from multiprocessing import Pool
 from contextlib import closing
 
-MAX_EPOCHS = 200.0
+MAX_EPOCHS = 1.0
 
 def optimizer():
     with tf.variable_scope("Optimizer"):
