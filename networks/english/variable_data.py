@@ -82,7 +82,7 @@ def read_data_csv(target):
     print("Reading data from csv...")
     labels = []
     spectrograms = []
-    with open(target, 'rb') as datafile:
+    with open(target, 'rt') as datafile:
         reader = csv.reader(datafile)
         for row in reader:
             labels.append(row[0])
