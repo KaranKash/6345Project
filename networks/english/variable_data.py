@@ -91,14 +91,14 @@ def read_data_csv(target):
     return spectrograms, labels
 
 # Graph ops for loading, parsing, and queuing training images
-def variable_input_graph(partition='train'):
+def variable_input_graph(training=True):
     with tf.name_scope("input"):
-        if partition == 'train':
+        if training:
             usedir = traindir
             target = "vartrain.csv"
             num_examples_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN
 
-        elif partition == 'test':
+        else:
             usedir = testdir
             target = "vartest.csv"
             num_examples_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_EVAL

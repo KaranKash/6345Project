@@ -1,18 +1,19 @@
 import tensorflow as tf
 from utils import *
-from functools import reduce
 import tflearn
 
 def conv_layer(height, width, channels, name='conv1-layer', padding='SAME'):
     def make_layer(input_to_layer):
         with tf.variable_scope(name, values=[input_to_layer]) as scope:
             try:
-                weights = tf.get_variable("weights", [height, width, input_to_layer.get_shape()[3], channels], initializer=tf.truncated_normal_initializer(stddev=0.1, dtype=tf.float32))
-                bias = tf.get_variable("bias", [channels], initializer=tf.constant_initializer(0.0, dtype=tf.float32))
+                weights = weight_variable([height, width, input_to_layer.get_shape()[3], channels])
+                bias = bias_variable([channels])
+                variable_summaries(weights)
+                variable_summaries(bias)
             except ValueError:
                 scope.reuse_variables()
-                weights = tf.get_variable("weights", [height, width, input_to_layer.get_shape()[3], channels], initializer=tf.truncated_normal_initializer(stddev=0.1, dtype=tf.float32))
-                bias = tf.get_variable("bias", [channels], initializer=tf.constant_initializer(0.0, dtype=tf.float32))
+                weights = weight_variable([height, width, input_to_layer.get_shape()[3], channels])
+                bias = bias_variable([channels])
         conv = tf.nn.conv2d(input_to_layer, weights, [1, 1, 1, 1], padding=padding)
         preactivation = tf.nn.bias_add(conv, bias)
         out = tf.nn.relu(preactivation)
@@ -26,7 +27,6 @@ def pool_layer(height, width, vstride, hstride, name='pool1-layer', padding='SAM
 
 def mean_pool_layer(name='pool1-layer', padding='SAME'):
     def make_layer(input_to_layer):
-        # print("MEAN INPUT", input_to_layer.get_shape())
         return tflearn.layers.conv.global_avg_pool(input_to_layer, name=name)
     return make_layer
 
@@ -38,19 +38,20 @@ def norm_layer(name='norm1-layer'):
 def flatten():
     def make_layer(inp):
         return tf.contrib.layers.flatten(inp)
-        # return tf.reshape(inp, [tf.shape(inp)[0], reduce(lambda x, y: int(x) * int(y), inp.get_shape()[1:], 1)])
     return make_layer
 
 def fully_connected_layer(size, keep_prob=1.0, name='fc-layer'):
     def make_layer(input_to_layer):
         with tf.variable_scope(name, values=[input_to_layer]) as scope:
             try:
-                weights = tf.get_variable("weights", [input_to_layer.get_shape()[1], size], initializer=tf.truncated_normal_initializer(stddev=0.1, dtype=tf.float32))
-                bias = tf.get_variable("bias", [size], initializer=tf.constant_initializer(0.0, dtype=tf.float32))
+                weights = weight_variable([input_to_layer.get_shape()[1], size])
+                bias = bias_variable([size])
+                variable_summaries(weights)
+                variable_summaries(bias)
             except ValueError:
                 scope.reuse_variables()
-                weights = tf.get_variable("weights", [input_to_layer.get_shape()[1], size], initializer=tf.truncated_normal_initializer(stddev=0.1, dtype=tf.float32))
-                bias = tf.get_variable("bias", [size], initializer=tf.constant_initializer(0.0, dtype=tf.float32))
+                weights = weight_variable([input_to_layer.get_shape()[1], size])
+                bias = bias_variable([size])
         preactivation = tf.matmul(input_to_layer, weights) + bias
         full_output = tf.nn.relu(preactivation)
         output = tf.nn.dropout(full_output, keep_prob=keep_prob)

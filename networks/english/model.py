@@ -12,11 +12,9 @@ NUM_CHANNELS = 1
 
 def forward_propagation(images, mnist, nummatches, batch_size, maxlen, train=False, dropout=False):
     audio_network = stack_layers([
-        conv_layer(5, 23, 64, name='audio-conv1-layer',padding='VALID'),
+        conv_layer(20, 23, 64, name='audio-conv1-layer',padding='VALID'),
         pool_layer(4,1,2,1,name="audio-max-pool1-layer",padding='VALID'),
-        conv_layer(10, 1, 512, name='audio-conv2-layer',padding='VALID'),
-        pool_layer(4,1,2,1,name="audio-max-pool2-layer",padding='VALID'),
-        conv_layer(15, 1, 1024, name='audio-conv3-layer',padding='VALID'),
+        conv_layer(20, 1, 512, name='audio-conv2-layer',padding='VALID'),
         mean_pool_layer(name="audio-mean-pool-layer",padding='VALID')
     ])
 
@@ -31,7 +29,7 @@ def forward_propagation(images, mnist, nummatches, batch_size, maxlen, train=Fal
     ])
 
     image_joint_network = stack_layers([
-        fully_connected_layer(1024, keep_prob=1.0, name="joint-local-layer"),
+        fully_connected_layer(512, keep_prob=1.0, name="joint-local-layer"),
     ])
 
     classification_network = stack_layers([
@@ -63,5 +61,6 @@ def forward_propagation(images, mnist, nummatches, batch_size, maxlen, train=Fal
     with tf.name_scope('loss'):
         labels_one_hot = tf.one_hot(nummatches, 5, on_value=1.0, off_value=0.0)
         loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=labels_one_hot))
+        tf.summary.scalar('batch_loss', loss)
 
     return correct, loss, proba, prediction
