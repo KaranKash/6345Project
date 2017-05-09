@@ -17,11 +17,11 @@ def optimizer():
         opt = tf.train.AdamOptimizer(0.00001)
         return increment_step, opt, global_step
 
-def train_network(training=True, use_gpu=True, restore_if_possible=True, batch_size=12):
+def train_network(training=True, use_gpu=True, restore_if_possible=True, batch_size=50):
     with tf.device("/cpu:0"):
 
         MAX_EPOCHS = 200.0
-        eval_batch_size = 12
+        eval_batch_size = 25
         eval_epochs = 10
 
         # setup metadata variables
@@ -159,4 +159,4 @@ def record(actuals, preds, dic):
     return dic
 
 if __name__ == "__main__":
-    train_network(use_gpu=True)
+    train_network(use_gpu=False)
