@@ -15,7 +15,7 @@ def forward_propagation(images, mnist, nummatches, batch_size, maxlen, train=Fal
     audio_network = stack_layers([
         conv_layer(10, 23, 64, name='audio-conv1-layer',padding='VALID'),
         pool_layer(4,1,2,1,name="audio-max-pool1-layer",padding='VALID'),
-        conv_layer(20, 1, 512, name='audio-conv2-layer',padding='VALID'),
+        conv_layer(25, 1, 512, name='audio-conv2-layer',padding='VALID'),
         mean_pool_layer(name="audio-mean-pool-layer",padding='VALID')
     ])
 
