@@ -1,7 +1,6 @@
 import os
 import tensorflow as tf
 import numpy as np
-from load_data import *
 
 DIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -9,10 +8,13 @@ DIR = os.path.dirname(os.path.realpath(__file__))
 testdir = '../../English/test'
 traindir = '../../English/train'
 
-NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = 6796 # length 2-4
-NUM_EXAMPLES_PER_EPOCH_FOR_EVAL = 628 # length 2-4
+NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = 9033 # length 3-7
+NUM_EXAMPLES_PER_EPOCH_FOR_EVAL = 865 # length 3-7
 IMAGE_WIDTH = 23
 NUM_CHANNELS = 1
+MEAN_VALUE = 0.07785402637727001 # length 3-7
+NUM_CLASSES = 11
+IMAGE_SIZE = 28
 
 def variable_load_from_file(f):
     '''Given a file, returns a list of the string values in that value'''
@@ -59,16 +61,25 @@ def pad(spectrograms):
 def variable_ld(rootdir,target):
     print("Couldn't find target file, creating it...")
     datastore = []
+    rows = []
+    count = 0
     for subdir, dirs, files in os.walk(rootdir):
         for filename in files:
             tmp = filename.split("_")
             chars = tmp[1][:-5]
-            if len(chars) > 1 and len(chars) <= 4:
+            if len(chars) >= 3 and len(chars) <= 7:
                 f = open(os.path.join(subdir, filename))
                 row = variable_load_from_file(f)
                 f.close()
+                count += 1
                 data = [chars] + row
+                rows.append([len(row),sum(row)])
                 datastore.append(data)
+    print("Read from " + str(count) + " files.")
+    print("Computing mean spectrogram pixel value...")
+    alllength = sum([r[0] for r in rows])
+    allvalues = sum([r[1] for r in rows])
+    print("Mean value: ", float(alllength/allvalues))
     print("Sorting the data by frame length...")
     datastore.sort(key=len)
     print("Finished sorting, writing to file...")
@@ -86,7 +97,8 @@ def read_data_csv(target):
         reader = csv.reader(datafile)
         for row in reader:
             labels.append(row[0])
-            spectrograms.append(row[1:])
+            tmp = list(map(lambda x: x - MEAN_SPEC, row[1:]))
+            spectrograms.append(tmp)
     print("Data reading complete!")
     return spectrograms, labels
 

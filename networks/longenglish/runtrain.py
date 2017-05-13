@@ -2,7 +2,6 @@ import tensorflow as tf
 from utils import *
 from nn import *
 from model import *
-from data import *
 from variable_data import *
 from load_data import *
 import numpy as np
@@ -27,7 +26,7 @@ def train_network(training=True, use_gpu=True, restore_if_possible=True, batch_s
         # setup metadata variables
         accuracies = []
         losses = []
-        confusion = {0:[],1:[],2:[],3:[],4:[]}
+        confusion = {0:[],1:[],2:[],3:[],4:[],5:[],6:[],7:[]}
 
         # Build graph training:
         all_spectrograms, all_labels, num_examples_per_epoch = variable_input_graph(training)
