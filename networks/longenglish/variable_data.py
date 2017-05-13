@@ -13,7 +13,6 @@ NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = 6796 # length 2-4
 NUM_EXAMPLES_PER_EPOCH_FOR_EVAL = 628 # length 2-4
 IMAGE_WIDTH = 23
 NUM_CHANNELS = 1
-MEAN_VALUE = 0.08115560787324554 # length 2-4
 
 def variable_load_from_file(f):
     '''Given a file, returns a list of the string values in that value'''
@@ -60,7 +59,6 @@ def pad(spectrograms):
 def variable_ld(rootdir,target):
     print("Couldn't find target file, creating it...")
     datastore = []
-    rows = []
     for subdir, dirs, files in os.walk(rootdir):
         for filename in files:
             tmp = filename.split("_")
@@ -70,12 +68,7 @@ def variable_ld(rootdir,target):
                 row = variable_load_from_file(f)
                 f.close()
                 data = [chars] + row
-                rows.append([len(row),sum(row)])
                 datastore.append(data)
-    print("Computing mean spectrogram pixel value...")
-    alllength = sum([r[0] for r in rows])
-    allvalues = sum([r[1] for r in rows])
-    print("Mean value: ", float(alllength/allvalues))
     print("Sorting the data by frame length...")
     datastore.sort(key=len)
     print("Finished sorting, writing to file...")
@@ -93,8 +86,7 @@ def read_data_csv(target):
         reader = csv.reader(datafile)
         for row in reader:
             labels.append(row[0])
-            tmp = list(map(lambda x: x - MEAN_SPEC, row[1:]))
-            spectrograms.append(tmp)
+            spectrograms.append(row[1:])
     print("Data reading complete!")
     return spectrograms, labels
 
@@ -119,5 +111,3 @@ def variable_input_graph(training=True):
 
         spectrograms, labels = read_data_csv(target)
         return spectrograms, labels, num_examples_per_epoch
-
-variable_ld(traindir,"tmp")
