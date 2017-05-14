@@ -19,7 +19,7 @@ def optimizer():
 def train_network(training=True, use_gpu=True, restore_if_possible=True, batch_size=50):
     with tf.device("/cpu:0"):
 
-        MAX_EPOCHS = 1.0
+        MAX_EPOCHS = 200.0
         eval_batch_size = 25
         eval_epochs = 5
 
@@ -119,7 +119,7 @@ def train_network(training=True, use_gpu=True, restore_if_possible=True, batch_s
                     spectrograms = eval_spectrograms[offset:(offset + eval_batch_size)]
                     spectrograms, maxlen = pad(spectrograms)
                     labels = eval_labels[offset:(offset + eval_batch_size)]
-                    mnist_batch, nummatches_batch = generate_mnist_set(labels, COPY)
+                    mnist_batch, nummatches_batch = generate_mnist_set(labels, COPY, train=False)
                     _, num_correct, i, preds = sess.run([test, e_correct, e_step, e_predictions], feed_dict={
                         e_specs: spectrograms, e_mnist: mnist_batch, e_nummatches: nummatches_batch, e_maximum: maxlen
                     })
