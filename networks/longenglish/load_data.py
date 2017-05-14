@@ -1,14 +1,4 @@
-import os
-import argparse
-import gzip
-import sys
-import time
 import numpy as np
-from multiprocessing import Pool
-from contextlib import closing
-import csv
-import tensorflow as tf
-from itertools import permutations
 from grid_mnist import *
 import random
 
