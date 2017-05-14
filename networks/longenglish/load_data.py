@@ -10,8 +10,8 @@ def generate_mnist_set(labels,copy,train=True):
     matches = []
     for i in range(copy):
         for label in labels:
-            label = str(label) # python 2.7
-            # label = str(label)[2:-1] # python3
+            # label = str(label) # python 2.7
+            label = str(label)[2:-1] # python3
             overlap = random.choice(choices[len(label)])
             grid = generate_mnist_grid(label,overlap,train)
             out.append(grid)
