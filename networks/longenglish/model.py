@@ -35,7 +35,7 @@ def forward_propagation(images, mnist, nummatches, batch_size, maxlen, train=Fal
 
     classification_network = stack_layers([
         fully_connected_layer(256, keep_prob=1.0, name="class-local2-layer"),
-        softmax_layer(5, name="class-softmax-layer")
+        softmax_layer(8, name="class-softmax-layer")
     ])
 
     specs = tf.concat([images]*COPY,0)
@@ -44,7 +44,12 @@ def forward_propagation(images, mnist, nummatches, batch_size, maxlen, train=Fal
     m2 = image_network(mnistset[1])
     m3 = image_network(mnistset[2])
     m4 = image_network(mnistset[3])
-    tmp = tf.concat([m1,m2,m3,m4],1)
+    m5 = image_network(mnistset[4])
+    m6 = image_network(mnistset[5])
+    m7 = image_network(mnistset[6])
+    m8 = image_network(mnistset[7])
+    m9 = image_network(mnistset[8])
+    tmp = tf.concat([m1,m2,m3,m4,m5,m6,m7,m8,m9],1)
     t1 = image_joint_network(tmp)
     # t1 = image_network(mnist)[0]
     tmp = audio_network(specs)
@@ -60,7 +65,7 @@ def forward_propagation(images, mnist, nummatches, batch_size, maxlen, train=Fal
                 correct = tf.reduce_sum(tf.to_int32(tf.equal(prediction, actual)))
 
     with tf.name_scope('loss'):
-        labels_one_hot = tf.one_hot(nummatches, 5, on_value=1.0, off_value=0.0)
+        labels_one_hot = tf.one_hot(nummatches, 8, on_value=1.0, off_value=0.0)
         loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=labels_one_hot))
         tf.summary.scalar('batch_loss', loss)
 

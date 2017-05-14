@@ -1,6 +1,7 @@
 import os
 import tensorflow as tf
 import numpy as np
+import csv
 
 DIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -12,7 +13,7 @@ NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = 9033 # length 3-7
 NUM_EXAMPLES_PER_EPOCH_FOR_EVAL = 865 # length 3-7
 IMAGE_WIDTH = 23
 NUM_CHANNELS = 1
-MEAN_VALUE = 0.07785402637727001 # length 3-7
+MEAN_SPEC = 0.07785402637727001 # length 3-7
 NUM_CLASSES = 11
 IMAGE_SIZE = 28
 
@@ -97,7 +98,7 @@ def read_data_csv(target):
         reader = csv.reader(datafile)
         for row in reader:
             labels.append(row[0])
-            tmp = list(map(lambda x: x - MEAN_SPEC, row[1:]))
+            tmp = list(map(lambda x: float(x) - MEAN_SPEC, row[1:]))
             spectrograms.append(tmp)
     print("Data reading complete!")
     return spectrograms, labels
