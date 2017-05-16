@@ -20,7 +20,7 @@ def optimizer():
 def train_network(training=True, use_gpu=True, restore_if_possible=True, batch_size=50):
     with tf.device("/cpu:0"):
 
-        MAX_EPOCHS = 250.0
+        MAX_EPOCHS = 100.0
         eval_batch_size = 25
         eval_epochs = 10
 
