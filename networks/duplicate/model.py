@@ -13,13 +13,11 @@ COPY = 10
 
 def forward_propagation(images, mnist, nummatches, batch_size, maxlen, train=False, dropout=False):
     audio_network = stack_layers([
-        conv_layer(1, 23, 64, name='audio-conv0-layer',padding='VALID'),
-        conv_layer(5, 1, 64, name='audio-conv1-layer',padding='VALID'),
-        pool_layer(4,1,2,1,name="audio-max-pool1-layer",padding='VALID'),
-        conv_layer(10, 1, 512, name='audio-conv2-layer',padding='VALID'),
-        pool_layer(4,1,2,1,name="audio-max-pool2-layer",padding='VALID'),
-        conv_layer(15, 1, 1024, name='audio-conv3-layer',padding='VALID'),
-        mean_pool_layer(name="audio-mean-pool-layer",padding='VALID')
+        conv_layer(5, 23, 64, name='audio-conv-layer'),
+        pool_layer(3,4,1,2,name="audio-max-pool-layer"),
+        flatten(),
+        fully_connected_layer(1024, keep_prob=0.5 if train and dropout else 1.0, name="audio-local1-layer"),
+        fully_connected_layer(1024, keep_prob=1.0, name="audio-local2-layer")
     ])
 
     image_network = stack_layers([
