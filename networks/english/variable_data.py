@@ -61,10 +61,13 @@ def variable_ld(rootdir,target):
     print("Couldn't find target file, creating it...")
     datastore = []
     rows = []
+    counts = {1:0,2:0,3:0,4:0,5:0,6:0,7:0}
     for subdir, dirs, files in os.walk(rootdir):
         for filename in files:
             tmp = filename.split("_")
             chars = tmp[1][:-5]
+            length = len(chars)
+            counts[length] += 1
             if len(chars) > 1 and len(chars) <= 4:
                 f = open(os.path.join(subdir, filename))
                 row = variable_load_from_file(f)
@@ -76,14 +79,15 @@ def variable_ld(rootdir,target):
     alllength = sum([r[0] for r in rows])
     allvalues = sum([r[1] for r in rows])
     print("Mean value: ", float(allvalues/alllength))
-    print("Sorting the data by frame length...")
-    datastore.sort(key=len)
-    print("Finished sorting, writing to file...")
-    with open(target, 'wb') as datafile:
-        writer = csv.writer(datafile)
-        for elem in datastore:
-            writer.writerow(elem)
-    print("Data preparation complete!")
+    print(counts)
+    # print("Sorting the data by frame length...")
+    # datastore.sort(key=len)
+    # print("Finished sorting, writing to file...")
+    # with open(target, 'wb') as datafile:
+    #     writer = csv.writer(datafile)
+    #     for elem in datastore:
+    #         writer.writerow(elem)
+    # print("Data preparation complete!")
 
 def read_data_csv(target):
     print("Reading data from csv...")
