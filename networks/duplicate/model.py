@@ -13,11 +13,10 @@ COPY = 10
 
 def forward_propagation(images, mnist, nummatches, batch_size, maxlen, train=False, dropout=False):
     audio_network = stack_layers([
-        conv_layer(5, 23, 64, name='audio-conv-layer'),
-        pool_layer(3,4,1,2,name="audio-max-pool-layer"),
-        flatten(),
-        fully_connected_layer(1024, keep_prob=0.5 if train and dropout else 1.0, name="audio-local1-layer"),
-        fully_connected_layer(1024, keep_prob=1.0, name="audio-local2-layer")
+        conv_layer(10, 23, 64, name='audio-conv1-layer',padding='VALID'),
+        pool_layer(4,1,2,1,name="audio-max-pool1-layer",padding='VALID'),
+        conv_layer(25, 1, 512, name='audio-conv2-layer',padding='VALID'),
+        mean_pool_layer(name="audio-mean-pool-layer",padding='VALID')
     ])
 
     image_network = stack_layers([
@@ -31,7 +30,7 @@ def forward_propagation(images, mnist, nummatches, batch_size, maxlen, train=Fal
     ])
 
     image_joint_network = stack_layers([
-        fully_connected_layer(1024, keep_prob=1.0, name="joint-local-layer"),
+        fully_connected_layer(512, keep_prob=1.0, name="joint-local-layer"),
     ])
 
     classification_network = stack_layers([
@@ -54,7 +53,7 @@ def forward_propagation(images, mnist, nummatches, batch_size, maxlen, train=Fal
     t1 = image_joint_network(tmp)
     # t1 = image_network(mnist)[0]
     tmp = audio_network(specs)
-    t2 = tf.reshape(tmp, [batch_size*COPY, 1024])
+    t2 = tf.reshape(tmp, [batch_size*COPY, 512])
     embeddings = tf.concat([t1,t2],1)
     # print("embeddings",embeddings.get_shape())
     _, logits, proba, prediction = classification_network(embeddings)

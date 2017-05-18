@@ -13,7 +13,7 @@ NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN = 9033 # length 3-7
 NUM_EXAMPLES_PER_EPOCH_FOR_EVAL = 865 # length 3-7
 IMAGE_WIDTH = 23
 NUM_CHANNELS = 1
-MEAN_SPEC = 0.07785402637727001 # length 3-7
+MEAN_SPEC = 12.844550841264601 # length 3-7
 NUM_CLASSES = 11
 IMAGE_SIZE = 28
 
@@ -80,7 +80,7 @@ def variable_ld(rootdir,target):
     print("Computing mean spectrogram pixel value...")
     alllength = sum([r[0] for r in rows])
     allvalues = sum([r[1] for r in rows])
-    print("Mean value: ", float(alllength/allvalues))
+    print("Mean value: ", float(allvalues/alllength))
     print("Sorting the data by frame length...")
     datastore.sort(key=len)
     print("Finished sorting, writing to file...")
