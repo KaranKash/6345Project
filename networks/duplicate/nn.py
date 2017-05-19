@@ -37,7 +37,7 @@ def norm_layer(name='norm1-layer'):
 
 def flatten():
     def make_layer(inp):
-        return tf.reshape(inp, [tf.shape(inp)[0], reduce(lambda x, y: int(x) * int(y), inp.get_shape()[1:], 1)])
+        return tf.contrib.layers.flatten(inp)
     return make_layer
 
 def fully_connected_layer(size, keep_prob=1.0, name='fc-layer'):
